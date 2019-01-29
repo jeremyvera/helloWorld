@@ -1,0 +1,16 @@
+#!/bin/bash
+
+paycode="MGHPCC/INTERN"
+billable="Y"
+emergency="N"
+
+echo -n "What is your start time? "
+read starttime
+echo -n "What is your end time? "
+read endtime
+echo -n "How many hours have you worked? "
+read hours
+echo -n "What did you do today? "
+read work
+
+echo "$USER|`date +%F` $starttime|`date +%F` $endtime|$hours|$paycode|$billable|$emergency|$work" 

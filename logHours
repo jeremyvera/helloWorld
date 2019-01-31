@@ -4,8 +4,27 @@ paycode="MGHPCC/INTERN"
 billable="Y"
 emergency="N"
 
-echo -n "What is your start time? "
+echo -n "What is your start time? Please enter in 24 hour 00:00 format (times will be rounded to the nearest quarter of an hour: "
 read starttime
+hourStime=$(echo $starttime | cut -d ":" -f 1)
+minuteStime=$(echo $starttime | cut -d ":" -f 2)
+
+
+if [ "$minuteStime" != "00" -o 	"$minuteStime" != "15" -o "$minuteStime" != "30" -o "$minuteStime" != "45" ]
+then
+	if [	"$minuteStime" -lt 8 ]
+	 then minuteStime="00"
+      elif [	"$minuteStime" -ge 8 && "$minuteStime" -lt 23 ]
+	 then minuteStime="15"
+      elif [	"$minuteStime" -ge 23 && "$minuteStime" -lt 38 ]
+	 then minuteStime="30"
+      elif [	"$minuteStime" -ge 38 && "$minuteStime" -lt 53 ]
+	 then minuteStime="45"
+	else
+		hourStime=$hourStime + 1
+	fi
+fi
+
 echo -n "What is your end time? "
 read endtime
 echo -n "How many hours have you worked? "
@@ -13,4 +32,4 @@ read hours
 echo -n "What did you do today? "
 read work
 
-echo "$USER|`date +%F` $starttime|`date +%F` $endtime|$hours|$paycode|$billable|$emergency|$work" 
+echo "$USER|`date +%F` $hourStime:$minuteStime|`date +%F` $endtime|$hours|$paycode|$billable|$emergency|$work" 

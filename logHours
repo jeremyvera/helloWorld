@@ -14,11 +14,11 @@ if [ "$minuteStime" != "00" -o 	"$minuteStime" != "15" -o "$minuteStime" != "30"
 then
 	if [	"$minuteStime" -lt 8 ]
 	 then minuteStime="00"
-      elif [	"$minuteStime" -ge 8 && "$minuteStime" -lt 23 ]
+      elif [	"$minuteStime" -lt 23 ]
 	 then minuteStime="15"
-      elif [	"$minuteStime" -ge 23 && "$minuteStime" -lt 38 ]
+      elif [	"$minuteStime" -lt 38 ]
 	 then minuteStime="30"
-      elif [	"$minuteStime" -ge 38 && "$minuteStime" -lt 53 ]
+      elif [	"$minuteStime" -lt 53 ]
 	 then minuteStime="45"
 	else
 		hourStime=$hourStime + 1
@@ -27,9 +27,43 @@ fi
 
 echo -n "What is your end time? "
 read endtime
-echo -n "How many hours have you worked? "
+hourEtime=$(echo $endtime | cut -d ":" -f 1)
+minuteEtime=$(echo $endtime | cut -d ":" -f 2)
+
+
+if [ "$minuteEtime" != "00" -o  "$minuteEtime" != "15" -o "$minuteEtime" != "30" -o "$minuteEtime" != "45" ]
+then
+    if [    "$minuteEtime" -lt 8 ]
+     then minuteEtime="00"
+      elif [    "$minuteEtime" -lt 23 ]
+     then minuteEtime="15"
+      elif [    "$minuteEtime" -lt 38 ]
+     then minuteEtime="30"
+      elif [    "$minuteEtime" -lt 53 ]
+     then minuteEtime="45"
+    else
+        hourEtime=$hourEtime + 1
+    fi
+fi
+
+echo -n "How many hours have you worked? Please enter in decimal format and round to the nearest quarter(ex. 3.75 hours): "
 read hours
+if [	"$hours" != *"."	]
+then
+	echo -n "Hours must be in decimal format: "
+	read hours
+fi
+workHour=$(echo $hours | cut -d "." -f 1)
+workMin=$(echo $hours | cut -d "." -f 2) 
+if [	"$workMin" != "0" -o "$workMin" != "25" -o "$workMin" != "5" -o "$workMin" != "75" ]
+then
+	if [	"$workMin" -lt ]
 echo -n "What did you do today? "
 read work
+if [	-z "$work"	]
+then
+	echo -n "You must include a description of your work for the day: "
+read work
+fi
 
-echo "$USER|`date +%F` $hourStime:$minuteStime|`date +%F` $endtime|$hours|$paycode|$billable|$emergency|$work" 
+echo "$USER|`date +%F` $hourStime:$minuteStime|`date +%F` $hourEtime:$minuteEtime|$hours|$paycode|$billable|$emergency|$work" 

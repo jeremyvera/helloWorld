@@ -27,6 +27,8 @@ then
 	 fi
 fi
 
+starttime=$(echo "$hourStime" + ":" + "$hourEtime")
+
 echo -n "What is your end time? "
 read endtime
 hourEtime=$(echo $endtime | cut -d ":" -f 1)
@@ -49,34 +51,26 @@ then
     fi
 fi
 
-echo -n "How many hours have you worked? Please enter in decimal format and round to the nearest quarter(ex. 3.75 hours): "
-read hours
+hi='hours=
 workHour=$(echo $hours | cut -d "." -f 1)
 workMin=$(echo $hours | cut -d "." -f 2) 
-if [	"$hours" != *"."	]
-then
-	if [	"$workMin" != "0" -o "$workMin" != "00" -o "$workMin" != "25" -o "$workMin" != "5" -o "$workMin" != "75" ]
-     then
-		if [	"$workMin" -lt 13 ]
-		 then workMin="0"
-		  elif [	"$workMin" -lt 38 ]
-		 then workMin="25"
-		  elif [	"$workMin" -lt 63 ]
-		 then workMin="50"
-		  elif [	"$workMin" -lt 88 ]
-		 then workMin="75"
-		else 
-			workHour=$(($workHour + 1))
-	
-		fi
-	fi
-fi
 
-#use time check to see if user input for workhours is accurate
-		
-hoursCheck=$(($hourEtime - $hourStime))
-minsCheck=$(($minuteEtime - $minuteStime))
-timeCheck=$(())
+
+	if	 [	"$workMin" != "0" -o "$workMin" != "00" -o "$workMin" != "25" -o "$workMin" != "5" -o "$workMin" != "75" ]
+    	 then
+			if [	"$workMin" -lt 13 ]
+			 then workMin="0"
+			  elif [	"$workMin" -lt 38 ]
+			 then workMin="25"
+			  elif [	"$workMin" -lt 63 ]
+			 then workMin="50"
+			  elif [	"$workMin" -lt 88 ]
+			 then workMin="75"
+			else 
+			workHour=$(($workHour + 1))
+		fi	
+	fi
+'
 
 echo -n "What did you do today? "
 read work
@@ -86,4 +80,4 @@ then
 read work
 fi
 
-echo "$USER|`date +%F` $hourStime:$minuteStime|`date +%F` $hourEtime:$minuteEtime|$hours|$paycode|$billable|$emergency|$work" 
+echo "$USER|`date +%F` $starttime|`date +%F` $hourEtime:$minuteEtime|$hours|$paycode|$billable|$emergency|$work" 

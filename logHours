@@ -6,71 +6,83 @@ emergency="N"
 
 echo -n "What is your start time? Please enter in 24 hour 00:00 format (times will be rounded to the nearest quarter of an hour: "
 read starttime
-hourStime=$(echo $starttime | cut -d ":" -f 1)
-minuteStime=$(echo $starttime | cut -d ":" -f 2)
+
+startHour=$(echo $starttime | cut -d ":" -f 1)
+startMin=$(echo $starttime | cut -d ":" -f 2)
 
 
-if [ "$minuteStime" != "00" -o 	"$minuteStime" != "15" -o "$minuteStime" != "30" -o "$minuteStime" != "45" ]
+if [ "$startMin" != "00" -o "$startMin" != "15" -o "$startMin" != "30" -o "$startMin" != "45" ]
 then
-	if [	"$minuteStime" -lt 8 ]
-	 then minuteStime="00"
-      elif [	"$minuteStime" -lt 23 ]
-	 then minuteStime="15"
-      elif [	"$minuteStime" -lt 38 ]
-	 then minuteStime="30"
-      elif [	"$minuteStime" -lt 53 ]
-	 then minuteStime="45"
-	  elif [	"$minuteStime" -ge 53 ]
+	if [	"$startMin" -lt 8 ]
+	 then startMin="00"
+      elif [	"$startMin" -lt 23 ]
+	 then startMin="15"
+      elif [	"$startMin" -lt 38 ]
+	 then startMin="30"
+      elif [	"$startMin" -lt 53 ]
+	 then startMin="45"
+	  elif [	"$startMin" -ge 53 ]
 	 then
-		 hourStime=$(($hourStime + 1))
-         minuteStime="00"
+		 startHour=$(($startHour + 1))
+         startMin="00"
 	 fi
 fi
 
-starttime=$(echo "$hourStime" + ":" + "$hourEtime")
+starttime=$(echo "$startHour:$startMin")
 
 echo -n "What is your end time? "
 read endtime
-hourEtime=$(echo $endtime | cut -d ":" -f 1)
-minuteEtime=$(echo $endtime | cut -d ":" -f 2)
+
+endHour=$(echo $endtime | cut -d ":" -f 1)
+endMin=$(echo $endtime | cut -d ":" -f 2)
 
 
-if [ "$minuteEtime" != "00" -o  "$minuteEtime" != "15" -o "$minuteEtime" != "30" -o "$minuteEtime" != "45" ]
+if [ "$endMin" != "00" -o  "$endMin" != "15" -o "$endMin" != "30" -o "$endMin" != "45" ]
 then
-    if [    "$minuteEtime" -lt 8 ]
-     then minuteEtime="00"
-      elif [    "$minuteEtime" -lt 23 ]
-     then minuteEtime="15"
-      elif [    "$minuteEtime" -lt 38 ]
-     then minuteEtime="30"
-      elif [    "$minuteEtime" -lt 53 ]
-     then minuteEtime="45"
+    if [    "$endMin" -lt 8 ]
+     then endMin="00"
+      elif [    "$endMin" -lt 23 ]
+     then endMin="15"
+      elif [    "$endMin" -lt 38 ]
+     then endMin="30"
+      elif [    "$endMin" -lt 53 ]
+     then endMin="45"
     else
-        hourEtime=$(($hourEtime + 1)) 
-		minuteEtime="00"
+        endHour=$(($endHour + 1)) 
+		endMin="00"
     fi
 fi
+endtime=$( echo "$endHour:$endMin")
 
-hi='hours=
-workHour=$(echo $hours | cut -d "." -f 1)
-workMin=$(echo $hours | cut -d "." -f 2) 
+newEnd=`date +%s -d ${endtime}`
+newStart=`date +%s -d ${starttime}`
 
+timeSecs=$(echo "$newEnd - $newStart" | bc)
+workTime=`date +%H:%M -ud @${timeSecs}`
 
-	if	 [	"$workMin" != "0" -o "$workMin" != "00" -o "$workMin" != "25" -o "$workMin" != "5" -o "$workMin" != "75" ]
-    	 then
-			if [	"$workMin" -lt 13 ]
-			 then workMin="0"
-			  elif [	"$workMin" -lt 38 ]
-			 then workMin="25"
-			  elif [	"$workMin" -lt 63 ]
-			 then workMin="50"
-			  elif [	"$workMin" -lt 88 ]
-			 then workMin="75"
+workHrs=$(echo $workTime | cut -d ":" -f 1)
+if [	"$workHrs" != 00 ]
+then 
+	workHrs=$(echo $workHrs | sed 's/^0*//')
+	else
+		workHrs=0
+fi
+
+workMin=$(echo $workTime | cut -d ":" -f 2)
+
+if [	"$workMin" -lt 8 ]
+  then workMin="0"
+    elif [	"$workMin" -lt 23 ]
+      then workMin="25"
+	    elif [	"$workMin" -lt 38 ]
+	      then workMin="50"
+		    elif [	"$workMin" -lt 53 ]
+		      then workMin="75"
 			else 
-			workHour=$(($workHour + 1))
+		      workHrs=$(($workHrs + 1))
 		fi	
-	fi
-'
+
+hours=$(echo "$workHrs"."$workMin")
 
 echo -n "What did you do today? "
 read work
@@ -80,4 +92,4 @@ then
 read work
 fi
 
-echo "$USER|`date +%F` $starttime|`date +%F` $hourEtime:$minuteEtime|$hours|$paycode|$billable|$emergency|$work" 
+echo "$USER|`date +%F` $starttime|`date +%F` $endtime|$hours|$paycode|$billable|$emergency|$work" 

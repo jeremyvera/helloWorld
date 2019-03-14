@@ -4,11 +4,25 @@ paycode="MGHPCC/INTERN"
 billable="Y"
 emergency="N"
 
-echo -n "What is your start time? Please enter in 24 hour 00:00 format (times will be rounded to the nearest quarter of an hour: "
-read starttime
+echo -n "Use this program to enter hours. Press q to quit or any other key to continue: "
+read check
 
+while [	"$check" != "q" ]
+do
+
+echo -n "What is your start time? Please enter in 24 hour 00:00 format (times will be rounded to the nearest quarter of an hour): "
+read starttime
+ 
 startHour=$(echo $starttime | cut -d ":" -f 1)
 startMin=$(echo $starttime | cut -d ":" -f 2)
+
+while [	-z "$starttime" ] || ! [[ "$starttime" =~ [0-9][0-9]:[0-9][0-9] ]] 
+do
+	echo -n "Please enter valid start time: "
+	read starttime
+	startHour=$(echo $starttime | cut -d ":" -f 1)
+	startMin=$(echo $starttime | cut -d ":" -f 2)
+done
 
 
 if [ "$startMin" != "00" -o "$startMin" != "15" -o "$startMin" != "30" -o "$startMin" != "45" ]
@@ -36,6 +50,23 @@ read endtime
 endHour=$(echo $endtime | cut -d ":" -f 1)
 endMin=$(echo $endtime | cut -d ":" -f 2)
 
+
+while [ -z "$endtime" ] || ! [[ "$endtime" =~ [0-9][0-9]:[0-9][0-9] ]] 
+do
+    echo -n "Please enter valid end time: "
+    read endtime
+    endHour=$(echo $endtime | cut -d ":" -f 1)
+    endMin=$(echo $endtime | cut -d ":" -f 2)
+done
+
+while [	"$endHour" -lt  "$startHour" ] || [	"$endHour" == $startHour -a "$endMin" -le "$startMin" ] 
+do 
+	echo -n "Please enter valid end time: "
+	read endtime
+	
+	endHour=$(echo $endtime | cut -d ":" -f 1)
+	endMin=$(echo $endtime | cut -d ":" -f 2)
+done
 
 if [ "$endMin" != "00" -o  "$endMin" != "15" -o "$endMin" != "30" -o "$endMin" != "45" ]
 then
@@ -93,3 +124,12 @@ read work
 fi
 
 echo "$USER|`date +%F` $starttime|`date +%F` $endtime|$hours|$paycode|$billable|$emergency|$work" 
+
+
+echo -n "Use this program to enter hours. Press q to quit or any other key to continue: "
+read check
+if	[	"$check" = "q" ]
+then
+	break
+fi
+done
